@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup	#website, crawl data
 import re
 import urllib.request
 import xlwt
-import ssl
+import ssl	# to solve the SSL problem while crawling
 context = ssl._create_unverified_context()
 
 def main():
@@ -17,18 +17,24 @@ def main():
 	# 3. save data
 	# saveData(savepath)
 
-	askURL("https://movie.douban.com/top250?start=")
+	# askURL("https://movie.douban.com/top250?start=")
+# pattern to find links
+findLink = re.compile('<a href="(.*)">')	# create a pattern
 # Crawl the website
 def getData(baseurl):
 	datalist = []
-	for i in range(0,10):
+	for i in range(0,1):
 		url = baseurl + str(i*25)
 		html = askURL(url)	# save the web source code
 
 		# analyze each webpage
-
-
-
+		soup = BeautifulSoup(html,"html.parser")
+		for item in soup.find_all("div", class_="item"):
+			# print(item)
+			item = str(item)
+			# get links
+			links = re.findall(findLink, item)[0]
+			print(links)
 	return datalist
 
 # get the content of a specific url
@@ -44,7 +50,7 @@ def askURL(url):
 	try:
 		response = urllib.request.urlopen(request, context=context)
 		html = response.read().decode()
-		print(html)
+		# print(html)
 	except urllib.error.URLError as e:
 		if hasattr(e,"code"):
 			print(e, code)
