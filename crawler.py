@@ -13,9 +13,9 @@ def main():
     # 1. getData
     datalist = getData(baseurl)
     # 2. analyze data
-    savepath = ".\\doubanMovieTop250.xls"
+    savepath = "doubanMovieTop250.xls"
     # 3. save data
-    # saveData(savepath)
+    saveData(datalist,savepath)
 
     # askURL("https://movie.douban.com/top250?start=")
 
@@ -37,7 +37,7 @@ findBd = re.compile(r'<p class="">(.*?)</p>',re.S)
 # Crawl the website
 def getData(baseurl):
     datalist = []
-    for i in range(0,1):
+    for i in range(0,10):
         url = baseurl + str(i*25)
         html = askURL(url)	# save the web source code
 
@@ -115,8 +115,20 @@ def askURL(url):
     return html
 
 # save data
-def saveData(savepath):
-    pass
+def saveData(datalist, savepath):
+    book = xlwt.Workbook(encoding="utf-8",style_compression=0)  # create workbook
+    sheet = book.add_sheet('DoubanMovie250',cell_overwrite_ok=True)  # create worksheet
+    col = ("Link","Image","Chinese Name","Other Name","Rating","Number of Rating","Inq","Bd")
+    for i in range(0,8):
+        sheet.write(0,i,col[i])
+    for i in range(0,250):
+        print("第%d条"%(i+1))
+        data = datalist[i]
+        for j in range(0,8):
+            sheet.write(i+1,j,data[j])
+        
+    book.save('Douban.xls')  # save
 
 if __name__ == "__main__":
     main()
+    print("Finish!")
